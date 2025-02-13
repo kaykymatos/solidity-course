@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blockchain Miner</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="../node_modules/web3/dist/web3.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Blockchain Miner</h1>
+      <div class="block-info">
+        <p><strong>Nome:</strong> <span id="nome"></span></p>
+        <input type="text" placeholder="Digite o nome" id="novoNome"/>
+        <button onclick="setaNome()">Mudar nome</button>
+      </div>
+    </div>
+    <script>
+      const web3 = new Web3("HTTP://127.0.0.1:7545");
+      let enderecoContrato = "0x29e511D2d86386108339A9ad2D4f13cbEF71e5e7";
+      let abi = [
+        {
+          inputs: [],
+          name: "name",
+          outputs: [{ internalType: "string", name: "", type: "string" }],
+          stateMutability: "view",
+          type: "function",
+          constant: true,
+        },
+        {
+          inputs: [{ internalType: "string", name: "newName", type: "string" }],
+          name: "setName",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "getName",
+          outputs: [{ internalType: "string", name: "", type: "string" }],
+          stateMutability: "view",
+          type: "function",
+          constant: true,
+        },
+      ];
+      let contract = new web3.eth.Contract(abi, enderecoContrato);
+      async function setaNome() {
+        let accounts = await web3.eth.getAccounts()
+        let address = accounts[0]
+        let receipt = await contract.methods.setName(document.getElementById("novoNome").value).send({from:address});
+      
+        pegaNome();
+      }
+      async function pegaNome() {
+        let nome = await contract.methods.name().call();
+        document.getElementById("nome").textContent = nome;
+      }
+      pegaNome();
+    </script>
+  </body>
+</html>

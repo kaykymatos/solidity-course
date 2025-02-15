@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blockchain Miner</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="../node_modules/web3/dist/web3.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Recebe dinheiro</h1>
+      <div class="block-info">
+        <button onclick="recebeDinheiroClick()">Recebe dinheiro</button>
+      </div>
+    </div>
+    <script>
+      const web3 = new Web3("HTTP://127.0.0.1:7545");
+      let enderecoContrato = "0xF8a559fbF9F73dB240e4b0930f6E0FD1e8926131";
+      let abi = [
+        {
+          inputs: [],
+          name: "enderecoAnterior",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+          constant: true,
+        },
+        {
+          inputs: [],
+          name: "recebeDinheiro",
+          outputs: [],
+          stateMutability: "payable",
+          type: "function",
+          payable: true,
+        },
+      ];
+      let contract = new web3.eth.Contract(abi, enderecoContrato);
+      let accountIndex = 0;
+      async function recebeDinheiroClick() {
+        let accounts = await web3.eth.getAccounts();
+        if (accounts[accountIndex]) {
+         this.recebeDinheiro();
+        } else {
+          accountIndex = 0;
+          this.recebeDinheiro();
+        }
+      }
+      async function recebeDinheiro() {
+        let address = accounts[accountIndex];
+          let receipt = await contract.methods
+            .recebeDinheiro()
+            .send({ from: address, value: 10000000000000000000 });
+          accountIndex++;
+      } 
+    </script>
+  </body>
+</html>
